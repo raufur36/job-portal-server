@@ -28,8 +28,14 @@ async function run() {
         await client.connect();
         const newCollection = client.db('jobPortal').collection('jobs');
         const applicationCollection = client.db('applys').collection('apply');
-       app.get('/jobs', async (req,res) => {
-        const results = await newCollection.find().toArray();
+       
+        app.get('/jobs', async (req,res) => {
+        const email = req.query.email;
+        const query = {};
+        if(email){
+            query.hr_email = email;
+        }
+        const results = await newCollection.find(query).toArray();
         res.send(results);
        })
 
@@ -48,7 +54,11 @@ async function run() {
         res.send(result);
        })
 
-
+       app.post('/jobs', async(req, res) => {
+        const newJob = req.body;
+        const results = await newCollection.insertOne(newJob);
+        res.send(results)
+       } )
 
        //job applications 
 
